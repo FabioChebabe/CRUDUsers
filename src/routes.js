@@ -1,13 +1,33 @@
 const { Router } = require('express');
 
 const router = Router();
+const UserController = require('./app/controller/UserController');
+const UserRepository = require('./app/repositories/UserRepository');
+const db = require('./db/database');
 
-router.get('/', (req, res) => {
-  res.send('Hello world');
-});
+router.get('/', UserController.index);
 
 router.post('/', (req, res) => {
-  console.log(req.body);
+  const query = `INSERT INTO users (
+        firstName,
+        lastName,
+        email,
+        image
+    ) VALUES (?, ?, ?, ?);
+  `;
+  const values = [
+    req.body.firstName,
+    req.body.lastName,
+    req.body.email,
+    req.body.image,
+  ];
+
+  db.run(query, values, (err) => {
+    if (err) {
+      return console.log(err.message);
+    }
+    console.log('funcionou');
+  });
   res.send(req.body);
 });
 
