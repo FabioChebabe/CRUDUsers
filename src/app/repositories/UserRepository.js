@@ -7,7 +7,9 @@ class UserRepository {
         return console.log(err);
       }
 
-      return rows;
+      return new Promise(function (resolve, reject) {
+        resolve(rows);
+      });
     });
   }
 }
