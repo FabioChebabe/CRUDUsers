@@ -3,39 +3,44 @@ const db = require('../../db/database');
 
 class UserController {
   async index(request, response) {
-    // const test = await UserRepository.findAll();
-    // console.log(test);
-    db.all(`SELECT * FROM users`, [], (err, rows) => {
-      if (err) {
-        return console.log(err);
-      }
+    const users = await UserRepository.findAll();
 
-      response.send(rows);
-    });
+    response.send(users);
   }
 
   async store(request, response) {
-    const query = `INSERT INTO users (
-            firstName,
-            lastName,
-            email,
-            image
-        ) VALUES (?, ?, ?, ?);
-      `;
-    const values = [
-      request.body.firstName,
-      request.body.lastName,
-      request.body.email,
-      request.body.image,
-    ];
+    const { firstName, lastName, email, phone } = request.body;
 
-    db.run(query, values, (err) => {
-      if (err) {
-        return console.log(err.message);
+    if (!firstName) {
+      return response.status(400).json({ error: 'First name is required' });
+    }
+
+    if (!lastName) {
+      return response.status(400).json({ error: 'Last name is required' });
+    }
+
+    if (!email) {
+      return response.status(400).json({ error: 'E-mail is required' });
+    }
+
+    if (email) {
+      const userExists = await UserRepository.findByEmail(email);
+
+      if (userExists) {
+        return response
+          .status(400)
+          .json({ error: 'This e-mail is already in use' });
       }
-      console.log('funcionou');
+    }
+
+    const user = await UserRepository.create({
+      firstName,
+      lastName,
+      email,
+      phone,
     });
-    response.send(request.body);
+
+    response.status(201).json(user);
   }
 
   async show(request, response) {
