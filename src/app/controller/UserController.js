@@ -1,6 +1,6 @@
 const UserRepository = require('../repositories/UserRepository');
 const db = require('../../db/database');
-
+const isValidUUID = require('../utils/isValidUUID');
 class UserController {
   async index(request, response) {
     const users = await UserRepository.findAll();
@@ -45,22 +45,21 @@ class UserController {
 
   async show(request, response) {
     const { id } = request.params;
-    console.log(id);
 
-    db.get(`SELECT * FROM users WHERE id = ?`, [id], (err, row) => {
-      if (err) {
-        console.log(err);
-      }
+    if (!isValidUUID(id)) {
+      return response.status(400).json('User not found');
+    }
 
-      response.send(row);
-    });
+    const user = await UserRepository.findById(id);
+
+    response.send(user);
   }
 
   async update(request, response) {
     const { id } = request.params;
     const { firstName, lastName, email, image } = request.body;
 
-    if (!id) {
+    if (!isValidUUID(id)) {
       return response.status(400).json({ error: 'User not found' });
     }
 
