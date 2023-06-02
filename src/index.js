@@ -9,5 +9,3 @@ app.use(routes);
 app.listen(port, () => {
   console.log('App is running on http://localhost:3000');
 });
-
-console.log('teste');

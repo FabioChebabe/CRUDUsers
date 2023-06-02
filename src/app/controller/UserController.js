@@ -1,6 +1,6 @@
 const UserRepository = require('../repositories/UserRepository');
-const db = require('../../db/database');
 const isValidUUID = require('../utils/isValidUUID');
+
 class UserController {
   async index(request, response) {
     const users = await UserRepository.findAll();
@@ -57,35 +57,46 @@ class UserController {
 
   async update(request, response) {
     const { id } = request.params;
-    const { firstName, lastName, email, image } = request.body;
-
+    const { firstName, lastName, email, phone } = request.body;
     if (!isValidUUID(id)) {
       return response.status(400).json({ error: 'User not found' });
     }
 
-    db.run(
-      `UPDATE users SET firstName = ?, lastName = ?, email = ?, image = ? WHERE id = ?`,
-      [firstName, lastName, email, image, id],
-      (err) => {
-        if (err) {
-          console.log(err);
-        }
-      }
-    );
+    const userAlreadyExists = await UserRepository.findById(id);
 
-    response.sendStatus(200);
+    if (!userAlreadyExists) {
+      return response.status(400).json({ error: 'User not found' });
+    }
+
+    if (email) {
+      const userById = await UserRepository.findByEmail(email);
+
+      if (userById && userById.id !== id) {
+        return response
+          .status(400)
+          .json({ erro: 'This e-mail is alredy in use' });
+      }
+    }
+
+    const user = await UserRepository.update(id, {
+      firstName: firstName || userAlreadyExists.firstname,
+      lastName: lastName || userAlreadyExists.lastname,
+      email: email || userAlreadyExists.email,
+      phone: phone || userAlreadyExists.phone,
+    });
+
+    response.json(user);
   }
 
   async delete(request, response) {
     const { id } = request.params;
 
-    db.run(`DELETE FROM users WHERE id = ?`, [id], (err) => {
-      if (err) {
-        console.log(err);
-      }
-    });
+    if (!isValidUUID(id)) {
+      return response.status(400).json({ error: 'User not found' });
+    }
 
-    response.sendStatus(200);
+    await UserRepository.delete(id);
+    response.sendStatus(204);
   }
 }
 

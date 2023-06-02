@@ -37,6 +37,26 @@ class UserRepository {
 
     return row;
   }
+
+  async update(id, { firstName, lastName, email, phone }) {
+    const [row] = await db.query(
+      `
+    UPDATE users
+    SET firstName = $1, lastName = $2, email = $3, phone = $4
+    WHERE id = $5
+    RETURNING *
+    `,
+      [firstName, lastName, email, phone, id]
+    );
+
+    return row;
+  }
+
+  async delete(id) {
+    const deleteOp = db.query(`DELETE FROM users WHERE id = $1`, [id]);
+
+    return deleteOp;
+  }
 }
 
 module.exports = new UserRepository();

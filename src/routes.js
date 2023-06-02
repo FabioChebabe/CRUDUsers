@@ -2,8 +2,6 @@ const { Router } = require('express');
 
 const router = Router();
 const UserController = require('./app/controller/UserController');
-const UserRepository = require('./app/repositories/UserRepository');
-const db = require('./db/database');
 
 router.get('/', UserController.index);
 router.get('/user/:id', UserController.show);
