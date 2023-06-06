@@ -1,14 +1,15 @@
-const UserRepository = require('../repositories/UserRepository');
-const isValidUUID = require('../utils/isValidUUID');
+import { Request, Response } from 'express';
+import { isValidUUID } from '../utils/isValidUUID';
+import UserRepository from '../repositories/UserRepository';
 
 class UserController {
-  async index(request, response) {
+  async index(request: Request, response: Response) {
     const users = await UserRepository.findAll();
 
     response.send(users);
   }
 
-  async store(request, response) {
+  async store(request: Request, response: Response) {
     const { firstName, lastName, email, phone } = request.body;
 
     if (!firstName) {
@@ -43,7 +44,7 @@ class UserController {
     response.status(201).json(user);
   }
 
-  async show(request, response) {
+  async show(request: Request, response: Response) {
     const { id } = request.params;
 
     if (!isValidUUID(id)) {
@@ -55,7 +56,7 @@ class UserController {
     response.send(user);
   }
 
-  async update(request, response) {
+  async update(request: Request, response: Response) {
     const { id } = request.params;
     const { firstName, lastName, email, phone } = request.body;
     if (!isValidUUID(id)) {
@@ -88,7 +89,7 @@ class UserController {
     response.json(user);
   }
 
-  async delete(request, response) {
+  async delete(request: Request, response: Response) {
     const { id } = request.params;
 
     if (!isValidUUID(id)) {
@@ -100,4 +101,4 @@ class UserController {
   }
 }
 
-module.exports = new UserController();
+export default new UserController();

@@ -1,7 +1,23 @@
-const db = require('../../database');
+// const db = require('../../database/index.js');
+import db from '../../database/index';
+
+interface Users {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+}
+
+interface UsersApi {
+  id: string;
+  firstname: string;
+  lastname: string;
+  email: string;
+  phone?: string;
+}
 
 class UserRepository {
-  async findAll(orderBy) {
+  async findAll(orderBy?: string | null) {
     const orderDirection = !!orderBy
       ? orderBy.toUpperCase() === 'DESC'
         ? 'DESC'
@@ -12,21 +28,25 @@ class UserRepository {
     return rows;
   }
 
-  async findById(id) {
+  async findById(id: string) {
     const [row] = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
 
-    return row;
+    const data: UsersApi | any = row;
+
+    return data;
   }
 
-  async findByEmail(email) {
+  async findByEmail(email: string) {
     const [row] = await db.query(`SELECT * FROM users WHERE email = $1`, [
       email,
     ]);
 
-    return row;
+    const data: UsersApi | any = row;
+
+    return data;
   }
 
-  async create({ firstName, lastName, email, phone }) {
+  async create({ firstName, lastName, email, phone }: Users) {
     const [row] = await db.query(
       `INSERT INTO users(firstName, lastName, email, phone)
       VALUES($1, $2, $3, $4)
@@ -38,7 +58,7 @@ class UserRepository {
     return row;
   }
 
-  async update(id, { firstName, lastName, email, phone }) {
+  async update(id: string, { firstName, lastName, email, phone }: Users) {
     const [row] = await db.query(
       `
     UPDATE users
@@ -52,11 +72,11 @@ class UserRepository {
     return row;
   }
 
-  async delete(id) {
+  async delete(id: string) {
     const deleteOp = db.query(`DELETE FROM users WHERE id = $1`, [id]);
 
     return deleteOp;
   }
 }
 
-module.exports = new UserRepository();
+export default new UserRepository();

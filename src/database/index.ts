@@ -1,8 +1,8 @@
-const { Client } = require('pg');
+import { Client } from 'pg';
 
 const client = new Client({
-  host: '192.168.0.232',
-  // host: '192.168.2.106',
+  // host: '192.168.0.232',
+  host: '192.168.15.21',
   port: 5432,
   user: 'root',
   password: 'root',
@@ -11,8 +11,12 @@ const client = new Client({
 
 client.connect();
 
-exports.query = async (query, values) => {
+const query = async (query: string, values?: any) => {
   const { rows } = await client.query(query, values);
 
   return rows;
 };
+
+const db = { query };
+
+export default db;
