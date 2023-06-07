@@ -17,19 +17,20 @@ interface UsersApi {
 }
 
 class UserRepository {
-  async findAll(orderBy?: string | null) {
-    const orderDirection = !!orderBy
-      ? orderBy.toUpperCase() === 'DESC'
-        ? 'DESC'
-        : 'ASC'
-      : null;
-    const rows = await db.query(`SELECT * FROM users`);
+  async findAll() // orderBy?: string | null
+  {
+    // const orderDirection = orderBy
+    //   ? orderBy.toUpperCase() === 'DESC'
+    //     ? 'DESC'
+    //     : 'ASC'
+    //   : null;
+    const rows = await db.query('SELECT * FROM users');
 
     return rows;
   }
 
   async findById(id: string) {
-    const [row] = await db.query(`SELECT * FROM users WHERE id = $1`, [id]);
+    const [row] = await db.query('SELECT * FROM users WHERE id = $1', [id]);
 
     const data: UsersApi | any = row;
 
@@ -37,7 +38,7 @@ class UserRepository {
   }
 
   async findByEmail(email: string) {
-    const [row] = await db.query(`SELECT * FROM users WHERE email = $1`, [
+    const [row] = await db.query('SELECT * FROM users WHERE email = $1', [
       email,
     ]);
 
@@ -73,7 +74,7 @@ class UserRepository {
   }
 
   async delete(id: string) {
-    const deleteOp = db.query(`DELETE FROM users WHERE id = $1`, [id]);
+    const deleteOp = db.query('DELETE FROM users WHERE id = $1', [id]);
 
     return deleteOp;
   }
