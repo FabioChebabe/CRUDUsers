@@ -1,4 +1,3 @@
-// const db = require('../../database/index.js');
 import db from '../../database/index';
 
 interface Users {
@@ -17,8 +16,7 @@ interface UsersApi {
 }
 
 class UserRepository {
-  async findAll() // orderBy?: string | null
-  {
+  async findAll() { // orderBy?: string | null
     // const orderDirection = orderBy
     //   ? orderBy.toUpperCase() === 'DESC'
     //     ? 'DESC'
